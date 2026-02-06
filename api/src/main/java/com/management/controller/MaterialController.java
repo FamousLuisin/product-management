@@ -95,8 +95,24 @@ public class MaterialController {
     )
     @APIResponse(responseCode = "200", description = "Material quantity updated successfully")
     @APIResponse(responseCode = "404", description = "Material not found")
+    @APIResponse(responseCode = "400", description = "Invalid quantity")
     public Response addQuantityMaterial(@PathParam("code") String code, @QueryParam("quantity") Integer quantity) {
         materialService.addQuantityMaterial(code, quantity);
+        return Response.ok().build();
+    }
+
+    @PUT
+    @Path("/{code}/remove")
+    @Transactional
+    @Operation(summary = "Remove quantity from material",
+        description = "Removes a specified quantity from the existing material stock",
+        operationId = "removeQuantityMaterial"
+    )
+    @APIResponse(responseCode = "200", description = "Material quantity updated successfully")
+    @APIResponse(responseCode = "404", description = "Material not found")
+    @APIResponse(responseCode = "400", description = "Invalid quantity")
+    public Response removeQuantityMaterial(@PathParam("code") String code, @QueryParam("quantity") Integer quantity) {
+        materialService.removeQuantityMaterial(code, quantity);
         return Response.ok().build();
     }
 

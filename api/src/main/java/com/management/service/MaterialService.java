@@ -61,11 +61,26 @@ public class MaterialService {
             throw new WebApplicationException("Material not found", HttpResponseStatus.NOT_FOUND.code());
         }
 
-        if (quantity <= 0) {
+        if (quantity == null ||quantity <= 0) {
             throw new WebApplicationException("Invalid quantity", HttpResponseStatus.BAD_REQUEST.code());
         }
 
         entity.quantity += quantity;
+        entity.persist();
+    }
+
+    public void removeQuantityMaterial(String code, Integer quantity) {
+        MaterialEntity entity = MaterialEntity.find("code", code).firstResult();
+        
+        if (entity == null) {
+            throw new WebApplicationException("Material not found", HttpResponseStatus.NOT_FOUND.code());
+        }
+
+        if (quantity == null ||quantity <= 0 || entity.quantity - quantity < 0) {
+            throw new WebApplicationException("Invalid quantity", HttpResponseStatus.BAD_REQUEST.code());
+        }
+
+        entity.quantity -= quantity;
         entity.persist();
     }
 
