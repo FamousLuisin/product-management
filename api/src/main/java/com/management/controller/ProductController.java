@@ -25,7 +25,7 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProductController {
 
-   private final ProductService productService;
+    private final ProductService productService;
     
     public ProductController(ProductService productService) {
         this.productService = productService;
