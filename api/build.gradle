@@ -18,6 +18,11 @@ dependencies {
     implementation 'io.quarkus:quarkus-hibernate-orm'
     testImplementation 'io.quarkus:quarkus-junit'
     testImplementation 'io.rest-assured:rest-assured'
+
+    compileOnly("org.projectlombok:lombok:1.18.40")
+	annotationProcessor("org.projectlombok:lombok:1.18.40")
+	testCompileOnly("org.projectlombok:lombok:1.18.40")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.40")
 }
 
 group = 'com.management'
