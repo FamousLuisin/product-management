@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: productdb
+    volumes:
+      - product_db:/var/lib/postgresql/data
+    networks:
+      - product_management_network
+
+volumes:
+  product_db:
+
+networks:
+  product_management_network:

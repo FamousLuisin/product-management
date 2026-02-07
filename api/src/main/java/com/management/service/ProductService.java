@@ -16,13 +16,13 @@ public class ProductService {
     public ProductResponse createProduct(ProductRequest product) {
         ProductEntity entity = new ProductEntity();
 
-        if (product.getName().length() < 2 || product.getPrice() < 0) {
+        if (product.getName().length() < 0 || product.getPrice() <= 0) {
             throw new WebApplicationException("Invalid product data", HttpResponseStatus.BAD_REQUEST.code());
         }
 
         entity.name = product.getName();
         entity.price = product.getPrice();
-        entity.code = String.format("PR%04d", ProductEntity.count() + 1);
+        entity.code = String.format("PR%06d", ProductEntity.count() + 1);
         entity.persist();
 
         return new ProductResponse(entity.name, entity.price, entity.code);
@@ -47,8 +47,13 @@ public class ProductService {
 
     public void updateProduct(String code, ProductRequest product) {
         ProductEntity entity = ProductEntity.find("code", code).firstResult();
+        
         if (entity == null) {
             throw new WebApplicationException("Product not found", HttpResponseStatus.NOT_FOUND.code());
+        }
+
+        if (product.getName().length() < 0 || product.getPrice() <= 0) {
+            throw new WebApplicationException("Invalid product data", HttpResponseStatus.BAD_REQUEST.code());
         }
 
         entity.name = product.getName();
