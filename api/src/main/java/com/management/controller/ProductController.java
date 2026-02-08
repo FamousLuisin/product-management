@@ -1,8 +1,11 @@
 package com.management.controller;
 
+import java.util.List;
+
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
+import com.management.entity.manufacturing.dto.ProductManufacturing;
 import com.management.entity.product.dto.ProductRequest;
 import com.management.service.ProductService;
 
@@ -77,6 +80,21 @@ public class ProductController {
     @APIResponse(responseCode = "404", description = "Product not found")
     public Response updateProduct(@PathParam("code") String code, ProductRequest product) {
         productService.updateProduct(code, product);
+        return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("/{code}/manufacturing")
+    @Transactional
+    @Operation(summary = "Update product manufacturing",
+        description = "Updates the manufacturing details of an existing product",
+        operationId = "updateManufacturing"
+    )
+    @APIResponse(responseCode = "204", description = "Manufacturing updated successfully")
+    @APIResponse(responseCode = "400", description = "Invalid manufacturing data")
+    @APIResponse(responseCode = "404", description = "Product not found")
+    public Response updateManufacturing(@PathParam("code") String code, List<ProductManufacturing> manufacturing) {
+        productService.updateManufacturing(code, manufacturing);
         return Response.noContent().build();
     }
 
