@@ -111,4 +111,15 @@ public class ProductController {
         productService.deleteProduct(code);
         return Response.noContent().build();
     }
+
+    @GET
+    @Path("/production")
+    @Operation(summary = "Calculate product production",
+        description = "Calculates the potential production of products based on available materials",
+        operationId = "productProduction"
+    )
+    @APIResponse(responseCode = "200", description = "Product production calculated successfully")
+    public Response productProduction() {
+        return Response.ok(productService.productProduction()).build();
+    }
 }
