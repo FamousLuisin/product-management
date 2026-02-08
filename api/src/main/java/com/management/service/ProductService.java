@@ -1,10 +1,16 @@
 package com.management.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.management.entity.manufacturing.ManufacturingEntity;
 import com.management.entity.manufacturing.dto.ProductManufacturing;
+import com.management.entity.manufacturing.dto.ProductProduced;
+import com.management.entity.manufacturing.dto.QuantityProductProduced;
 import com.management.entity.material.MaterialEntity;
 import com.management.entity.product.ProductEntity;
 import com.management.entity.product.dto.ProductRequest;
@@ -51,6 +57,62 @@ public class ProductService {
 
         ManufacturingEntity.delete("product", entity);
         this.addManufacturing(entity, manufacturing);
+    }
+
+    public ProductProduced productProduction(){
+        List<ProductEntity> products = ProductEntity.findProductsWithManufacturingOrderByPriceDesc();
+        List<MaterialEntity> materials = MaterialEntity.findMaterialWithManufacturing();
+        List<ManufacturingEntity> manufacturings = ManufacturingEntity.findManufacturingOrderByPriceProduct();
+
+        products = this.addManufacturingInProducts(products, manufacturings);
+        HashMap<UUID, Integer> materialStock = materials.stream().collect(Collectors.toMap(m -> m.id, m -> m.quantity, (a, b) -> a, HashMap::new));
+
+        ProductProduced productProduced = new ProductProduced();
+
+        for (ProductEntity product : products) {
+            QuantityProductProduced gain = this.tryToManufactureProduct(product, materialStock);
+            
+            if (gain != null) {
+                productProduced.setPrice(productProduced.getPrice() + gain.getAgain());
+                productProduced.addProduct(product, gain.getQuantity());
+            }
+        }
+
+        return productProduced;
+    }
+
+    private QuantityProductProduced tryToManufactureProduct(ProductEntity product, HashMap<UUID, Integer> materialStock) {
+        int maxToProduce = Integer.MAX_VALUE;
+
+        for (ManufacturingEntity m : product.manufacturing) {
+            int stock = materialStock.getOrDefault(m.material.id, 0);
+
+            if (stock < m.quantity) {
+                return null;
+            }
+
+            maxToProduce = Math.min(maxToProduce, stock / m.quantity);
+        }
+
+        for (ManufacturingEntity m : product.manufacturing) {
+            int stock = materialStock.get(m.material.id);
+            materialStock.put(
+                m.material.id,
+                stock - (maxToProduce * m.quantity)
+            );
+        }
+
+        return new QuantityProductProduced(maxToProduce * product.price, maxToProduce);
+    }
+
+    private List<ProductEntity> addManufacturingInProducts(List<ProductEntity> products, List<ManufacturingEntity> manufacturings) {
+        Map<UUID, List<ManufacturingEntity>> byProductId = manufacturings.stream().collect(Collectors.groupingBy(m -> m.product.id));
+
+        products.forEach(product ->
+            product.manufacturing = byProductId.getOrDefault(product.id, List.of())
+        );
+
+        return products;
     }
 
     private void addManufacturing(ProductEntity product, List<ProductManufacturing> manufacturing) {

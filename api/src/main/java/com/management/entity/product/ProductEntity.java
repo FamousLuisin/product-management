@@ -1,6 +1,9 @@
 package com.management.entity.product;
 
+import java.util.List;
 import java.util.UUID;
+
+import com.management.entity.manufacturing.ManufacturingEntity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
@@ -8,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +27,12 @@ public class ProductEntity extends PanacheEntityBase{
     public Float price;
 
     public String code;
+
+    @Transient
+    public List<ManufacturingEntity> manufacturing;
+
+    public static List<ProductEntity> findProductsWithManufacturingOrderByPriceDesc() {
+        return ProductEntity.find("SELECT p FROM ProductEntity p JOIN ManufacturingEntity m ON p.id = m.product.id ORDER BY p.price DESC, p.name ASC").list();
+    }
+    
 }

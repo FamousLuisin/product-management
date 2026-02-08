@@ -1,5 +1,7 @@
 package com.management.entity.manufacturing;
 
+import java.util.List;
+
 import com.management.entity.material.MaterialEntity;
 import com.management.entity.product.ProductEntity;
 
@@ -29,4 +31,8 @@ public class ManufacturingEntity extends PanacheEntityBase {
     public MaterialEntity material;
 
     public Integer quantity;
+
+    public static List<ManufacturingEntity> findManufacturingOrderByPriceProduct() {
+        return ManufacturingEntity.find("SELECT m FROM ManufacturingEntity m JOIN ProductEntity p ON m.product.id = p.id ORDER BY p.price DESC, p.name ASC").list();
+    }
 }
