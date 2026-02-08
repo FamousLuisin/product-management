@@ -1,5 +1,6 @@
 package com.management.entity.material;
 
+import java.util.List;
 import java.util.UUID;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
@@ -20,4 +21,8 @@ public class MaterialEntity extends PanacheEntityBase {
     public String code;
     public String name;
     public Integer quantity;
+
+    public static List<MaterialEntity> findByCodes(List<String> codes) {
+        return list("code IN ?1", codes);
+    }
 }

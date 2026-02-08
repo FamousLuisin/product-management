@@ -3,6 +3,7 @@ package com.management.controller;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
+import com.management.entity.material.dto.MaterialQuantity;
 import com.management.entity.material.dto.MaterialRequest;
 import com.management.service.MaterialService;
 
@@ -96,8 +97,8 @@ public class MaterialController {
     @APIResponse(responseCode = "200", description = "Material quantity updated successfully")
     @APIResponse(responseCode = "404", description = "Material not found")
     @APIResponse(responseCode = "400", description = "Invalid quantity")
-    public Response addQuantityMaterial(@PathParam("code") String code, @QueryParam("quantity") Integer quantity) {
-        materialService.addQuantityMaterial(code, quantity);
+    public Response addQuantityMaterial(@PathParam("code") String code, MaterialQuantity quantity) {
+        materialService.addQuantityMaterial(code, quantity.getQuantity());
         return Response.ok().build();
     }
 
@@ -111,8 +112,8 @@ public class MaterialController {
     @APIResponse(responseCode = "200", description = "Material quantity updated successfully")
     @APIResponse(responseCode = "404", description = "Material not found")
     @APIResponse(responseCode = "400", description = "Invalid quantity")
-    public Response removeQuantityMaterial(@PathParam("code") String code, @QueryParam("quantity") Integer quantity) {
-        materialService.removeQuantityMaterial(code, quantity);
+    public Response removeQuantityMaterial(@PathParam("code") String code, MaterialQuantity quantity) {
+        materialService.removeQuantityMaterial(code, quantity.getQuantity());
         return Response.ok().build();
     }
 

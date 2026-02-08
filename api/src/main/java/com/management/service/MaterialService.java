@@ -16,13 +16,13 @@ public class MaterialService {
     public MaterialResponse createMaterial(MaterialRequest request) {
         MaterialEntity material = new MaterialEntity();
 
-        if (request.getName().length() < 3 || request.getQuantity() <= 0) {
+        if (request.getName().length() < 0 || request.getQuantity() < 0) {
             throw new WebApplicationException("Invalid material data", HttpResponseStatus.BAD_REQUEST.code());
         }
         
         material.name = request.getName();
         material.quantity = request.getQuantity();
-        material.code = String.format("MA%04d", MaterialEntity.count() + 1);
+        material.code = String.format("MA%06d", MaterialEntity.count() + 1);
         material.persist();
 
         return new MaterialResponse(material.code, material.name, material.quantity);
@@ -40,6 +40,16 @@ public class MaterialService {
         
         return entities.stream()
             .map(entity -> new MaterialResponse(entity.code, entity.name, entity.quantity)).toList();
+    }
+
+    public MaterialResponse getMaterialByCode(String code) {
+        MaterialEntity entity = MaterialEntity.find("code", code).firstResult();
+
+        if (entity == null) {
+            throw new WebApplicationException("Material not found", HttpResponseStatus.NOT_FOUND.code());
+        }
+
+        return new MaterialResponse(entity.code, entity.name, entity.quantity);
     }
 
     public void updateMaterial(String code, MaterialRequest request) {
@@ -92,15 +102,5 @@ public class MaterialService {
         }
 
         entity.delete();
-    }
-
-    public MaterialResponse getMaterialByCode(String code) {
-        MaterialEntity entity = MaterialEntity.find("code", code).firstResult();
-
-        if (entity == null) {
-            throw new WebApplicationException("Material not found", HttpResponseStatus.NOT_FOUND.code());
-        }
-
-        return new MaterialResponse(entity.code, entity.name, entity.quantity);
     }
 }
