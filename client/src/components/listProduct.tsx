@@ -11,16 +11,14 @@ export default function ListProduct() {
     useEffect(() => {
         async function fetchProducts() {
             try {
-                // const response = await fetch('/api/products');
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
 
-                // if (!response.ok) {
-                //     throw new Error("Response not OK");
-                // }
+                if (!response.ok) {
+                    throw new Error("Response not OK");
+                }
 
-                // console.log("Response status:", response.status);
-                // const data = await response.json();
-                // setProducts(data);
-                setProducts([{ name: 'Sample Product', price: 9.99, code: 'SP001' }, { name: 'Another Product', price: 19.99, code: 'AP002' }]);
+                const data = await response.json();
+                setProducts(data);
             } catch (error) {
                 console.error('Error fetching products:', error);
             }

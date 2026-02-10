@@ -17,8 +17,8 @@ export default function MaterialCard({ material }: { material: Material }) {
         <>
             <div className="border p-4 rounded-md shadow-md flex justify-between items-center">
                 <div>
-                    <h2 className="text-xl text-secondary font-bold mb-2">{material.name}</h2>
-                    <p className="text-lg text-gray-400">{material.quantity}</p>
+                    <h2 className="text-xl text-secondary font-bold mb-2 flex gap-3">{material.name} <span className="text-gray-400 text-xs">{material.code}</span></h2>
+                    <p className="text-lg text-gray-400">{material.quantity} un</p>
                 </div>
                 <div className="flex gap-4">
                     <button 
@@ -38,7 +38,7 @@ export default function MaterialCard({ material }: { material: Material }) {
                 <MaterialQuantityForm code={material.code} name={material.name} quantity={material.quantity}/>
             </Modal>
             <Modal isOpen={openModal === "edit"} onClose={() => setOpenModal(null)} modalTitle="Edit Material">
-                <EditMaterialForm name={material.name} code={material.code} />
+                <EditMaterialForm initialName={material.name} code={material.code} />
             </Modal>
             <Modal isOpen={openModal === "delete"} onClose={() => setOpenModal(null)} modalTitle="Delete Material">
                 <DeleteProductOrMaterial code={material.code} type={"material"}/>

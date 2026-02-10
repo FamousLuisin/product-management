@@ -1,14 +1,18 @@
 "use client"
+
+import type Manufacturing from "@/types/typeManufacturing";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
-type Manufacturing = {
-    materialCode: string;
-    quantity: number;
-};
+type Props = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onClose: (value: any) => any
+}
 
-export default function CreateProductForm() {
+export default function CreateProductForm({ onClose }: Props) {
     const [name, setName] = useState("");
     const [price, setPrice] = useState("");
+    const navigate = useNavigate();
 
     const [materialCode, setMaterialCode] = useState("");
     const [quantity, setQuantity] = useState(1);
@@ -18,9 +22,11 @@ export default function CreateProductForm() {
     function addManufacturing() {
       if (!materialCode || quantity <= 0) return;
 
+      const trimCode = materialCode.trim()
+
       setManufacturing([
         ...manufacturing,
-        { materialCode, quantity },
+        { materialCode: trimCode, quantity },
       ]);
 
       setMaterialCode("");
@@ -31,16 +37,37 @@ export default function CreateProductForm() {
       setManufacturing(manufacturing.filter((_, i) => i !== index));
     }
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.SubmitEvent) {
       e.preventDefault();
+
+      const url = `${import.meta.env.VITE_API_URL}/api/products`
 
       const payload = {
         name,
         price: Number(price),
-        manufacturing,
+        manufacturing: manufacturing,
       };
 
-      console.log(payload);
+      console.log(JSON.stringify(payload))
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload)
+        })
+
+        if (!response.ok) {
+          throw new Error("error creating product")
+        }
+
+        navigate("/")
+        onClose(null)
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     return (
@@ -84,7 +111,7 @@ export default function CreateProductForm() {
           <button
             type="button"
             onClick={addManufacturing}
-            className="bg-primary text-secondary px-3 rounded-md font-semibold"
+            className="bg-primary text-secondary px-3 rounded-md font-semibold cursor-pointer"
           >
             Add
           </button>
@@ -113,7 +140,7 @@ export default function CreateProductForm() {
 
         <button
           type="submit"
-          className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition"
+          className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition cursor-pointer"
         >
           Create
         </button>

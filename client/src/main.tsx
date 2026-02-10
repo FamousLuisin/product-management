@@ -6,6 +6,7 @@ import Layout from './components/layout.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import Product from './routes/products.tsx'
 import Materials from './routes/materials.tsx'
+import Productions from './routes/production.tsx'
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
         {
           path: "/materials",
           Component: Materials
+        },
+        {
+          path: "/manufacturing",
+          Component: Productions
         }
       ]
     },
@@ -30,6 +35,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <div className="overflow-x-hidden">
+      <RouterProvider router={router} />
+    </div>
   </StrictMode>
 )

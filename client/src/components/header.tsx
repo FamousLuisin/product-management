@@ -37,10 +37,10 @@ export default function Header() {
             </div>
 
             <Modal isOpen={openModal === "product"} onClose={() => setOpenModal(null)} modalTitle="Create Product">
-                <CreateProductForm />
+                <CreateProductForm onClose={setOpenModal}/>
             </Modal>
             <Modal isOpen={openModal === "material"} onClose={() => setOpenModal(null)} modalTitle="Create Material">
-                <CreateMaterialForm />
+                <CreateMaterialForm onClose={setOpenModal}/>
             </Modal>
         </nav>
     )

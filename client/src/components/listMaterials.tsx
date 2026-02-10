@@ -11,16 +11,14 @@ export default function ListMaterials() {
     useEffect(() => {
         async function fetchMaterials() {
             try {
-                // const response = await fetch('/api/materials');
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/materials`);
 
-                // if (!response.ok) {
-                //     throw new Error("Response not OK");
-                // }
+                if (!response.ok) {
+                     throw new Error("Response not OK");
+                 }
 
-                // console.log("Response status:", response.status);
-                // const data = await response.json();
-                // setmaterials(data);
-                setMaterials([{code:"AA0000", name:"AAAAA", quantity:10}, {code:"BB0000", name:"BBBBB", quantity:1}]);
+                const data = await response.json();
+                setMaterials(data);
             } catch (error) {
                 console.error('Error fetching materials:', error);
             }

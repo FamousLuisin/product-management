@@ -1,5 +1,8 @@
 "use client"
 
+import { useState } from "react";
+import { useNavigate } from "react-router";
+
 type EditProductFormProps = {
     initialName: string;
     initialPrice: number;
@@ -11,19 +14,37 @@ export default function EditProductForm({
     initialPrice,
     code,
 }: EditProductFormProps) {
+    const [name, setName] = useState(initialName)
+    const [price, setPrice] = useState(initialPrice)
+    const navigate = useNavigate();
   
-    function handleSubmit(e: React.SubmitEvent) {
+    async function handleSubmit(e: React.SubmitEvent) {
         e.preventDefault();
 
-        const formData = new FormData(e.currentTarget as HTMLFormElement);
+        const url = `${import.meta.env.VITE_API_URL}/api/products/${code}`
 
         const payload = {
-            name: formData.get("name") as string,
-            price: Number(formData.get("price")),
-            code
+            name: name,
+            price: price,
         };
 
-        console.log(payload)
+        try {
+            const result = await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+
+            if(!result.ok){
+                throw new Error("error update product")
+            }
+
+            navigate("/")
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -31,7 +52,8 @@ export default function EditProductForm({
         <input
             type="text"
             name="name"
-            defaultValue={initialName}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Product Name"
             className="border-2 p-2 rounded-md text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-secondary-foreground"
         />
@@ -41,14 +63,15 @@ export default function EditProductForm({
             name="price"
             step="0.01"
             min="0"
-            defaultValue={initialPrice}
+            value={price}
+            onChange={(e) => setPrice(Number(e.target.value))}
             placeholder="Price"
             className="border-2 p-2 rounded-md text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-secondary-foreground"
         />
 
         <button
             type="submit"
-            className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition"
+            className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition cursor-pointer"
         >
             Save changes
         </button>

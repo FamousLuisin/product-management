@@ -17,7 +17,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <>
             <div className="border p-4 rounded-md shadow-md flex justify-between items-center">
                 <div>
-                    <h2 className="text-xl text-secondary font-bold mb-2">{product.name}</h2>
+                    <h2 className="text-xl text-secondary font-bold mb-2 flex gap-3">{product.name}<span className="text-gray-400 text-xs">{product.code}</span></h2>
                     <p className="text-lg text-gray-400">${product.price.toFixed(2)}</p>
                 </div>
                 <div className="flex gap-4">
@@ -37,7 +37,7 @@ export default function ProductCard({ product }: { product: Product }) {
             <Modal isOpen={openModal === "add"} onClose={() => setOpenModal(null)} modalTitle="Add Material">
                 <AddMaterialToProductForm code={product.code}/>
             </Modal>
-            <Modal isOpen={openModal === "edit"} onClose={() => setOpenModal(null)} modalTitle="Edit Produc">
+            <Modal isOpen={openModal === "edit"} onClose={() => setOpenModal(null)} modalTitle="Edit Product">
                 <EditProductForm initialName={product.name} initialPrice={product.price} code={product.code}/>
             </Modal>
             <Modal isOpen={openModal === "delete"} onClose={() => setOpenModal(null)} modalTitle="Delete Product">

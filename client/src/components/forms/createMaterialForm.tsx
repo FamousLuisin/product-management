@@ -1,17 +1,41 @@
 "use client"
 
-export default function CreateMaterialForm() {
-    function handleSubmit(e: React.SubmitEvent) {
+import { useState } from "react";
+import { useNavigate } from "react-router";
+
+type Props = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onClose: (value: any) => any
+}
+
+export default function CreateMaterialForm({onClose}: Props) {
+    const [name, setName] = useState("")
+    const [quantity, setQuantity] = useState(0)
+    const navigate = useNavigate();
+
+    async function handleSubmit(e: React.SubmitEvent) {
         e.preventDefault();
 
-        const formData = new FormData(e.currentTarget as HTMLFormElement);
+        const url = `${import.meta.env.VITE_API_URL}/api/materials`
 
-        const payload = {
-            name: formData.get("name") as string,
-            quantity: Number(formData.get("quantity")),
-        }; 
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({name: name, quantity: quantity})
+            })
 
-        console.log(payload);
+            if(!response.ok){
+                throw new Error("error creating material")
+            }
+
+            navigate("/")
+            onClose(null)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -19,7 +43,9 @@ export default function CreateMaterialForm() {
         <input
             type="text"
             name="name"
+            value={name}
             placeholder="Material Name"
+            onChange={(e) => setName(e.target.value)}
             className="border-2 p-2 rounded-md text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-secondary-foreground"
         />
 
@@ -27,13 +53,15 @@ export default function CreateMaterialForm() {
             type="number"
             name="quantity"
             min={0}
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
             placeholder="Quantity"
             className="border-2 p-2 rounded-md text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-secondary-foreground"
         />
 
         <button
             type="submit"
-            className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition"
+            className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition cursor-pointer"
         >
             Create Material
         </button>
