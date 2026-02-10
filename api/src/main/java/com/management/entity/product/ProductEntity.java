@@ -6,12 +6,14 @@ import java.util.UUID;
 import com.management.entity.manufacturing.ManufacturingEntity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +30,12 @@ public class ProductEntity extends PanacheEntityBase{
 
     public String code;
 
-    @Transient
+    @OneToMany(
+        mappedBy = "product",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
     public List<ManufacturingEntity> manufacturing;
 
     public static List<ProductEntity> findProductsWithManufacturingOrderByPriceDesc() {

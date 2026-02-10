@@ -3,11 +3,16 @@ package com.management.entity.material;
 import java.util.List;
 import java.util.UUID;
 
+import com.management.entity.manufacturing.ManufacturingEntity;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -21,6 +26,14 @@ public class MaterialEntity extends PanacheEntityBase {
     public String code;
     public String name;
     public Integer quantity;
+
+    @OneToMany(
+        mappedBy = "material",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    public List<ManufacturingEntity> manufacturing;
 
     public static List<MaterialEntity> findByCodes(List<String> codes) {
         return list("code IN ?1", codes);
