@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import com.management.entity.manufacturing.ManufacturingEntity;
@@ -32,7 +33,7 @@ public class ProductService {
 
         entity.name = product.getName();
         entity.price = product.getPrice();
-        entity.code = String.format("PR%06d", ProductEntity.count() + 1);
+        entity.code = String.format("PR%06d", ThreadLocalRandom.current().nextInt(0, 1000000));
         entity.persist();
 
         if (product.getManufacturing() == null || product.getManufacturing().isEmpty()) {
@@ -46,6 +47,8 @@ public class ProductService {
 
     public void updateManufacturing(String code, List<ProductManufacturing> manufacturing) {
         ProductEntity entity = ProductEntity.find("code", code).firstResult();
+
+        System.out.println("teste 1");
         
         if (entity == null) {
             throw new WebApplicationException("Product not found", HttpResponseStatus.NOT_FOUND.code());
@@ -54,6 +57,8 @@ public class ProductService {
         if (manufacturing == null) {
             throw new WebApplicationException("Manufacturing data is required", HttpResponseStatus.BAD_REQUEST.code());
         }
+
+        System.out.println("teste 2");
 
         ManufacturingEntity.delete("product", entity);
         this.addManufacturing(entity, manufacturing);
@@ -118,6 +123,8 @@ public class ProductService {
     private void addManufacturing(ProductEntity product, List<ProductManufacturing> manufacturing) {
         List<ManufacturingEntity> manufacturings = new ArrayList<>();
         
+        System.out.println("teste 3");
+
         MaterialEntity.findByCodes(
             manufacturing.stream()
                 .map(m -> m.getMaterialCode())
@@ -135,6 +142,7 @@ public class ProductService {
         });
 
         ManufacturingEntity.persist(manufacturings);
+        System.out.println("teste 4");
     }
 
     public List<ProductResponse> getProducts(Integer page, Integer size) {

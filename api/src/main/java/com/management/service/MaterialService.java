@@ -1,6 +1,7 @@
 package com.management.service;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.management.entity.material.MaterialEntity;
 import com.management.entity.material.dto.MaterialRequest;
@@ -22,7 +23,7 @@ public class MaterialService {
         
         material.name = request.getName();
         material.quantity = request.getQuantity();
-        material.code = String.format("MA%06d", MaterialEntity.count() + 1);
+        material.code = String.format("MA%06d", ThreadLocalRandom.current().nextInt(0, 1000000));
         material.persist();
 
         return new MaterialResponse(material.code, material.name, material.quantity);
@@ -60,7 +61,6 @@ public class MaterialService {
         }
 
         entity.name = request.getName();
-        entity.quantity = request.getQuantity();
         entity.persist();
     }
 
