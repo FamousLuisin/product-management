@@ -1,36 +1,50 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import MaterialCard from "./materialCard";
-import type Material from "@/types/typeMaterial";
+import { useQuery } from "@tanstack/react-query"
+import MaterialCard from "./materialCard"
+import type Material from "@/types/typeMaterial"
+import CardSkeleton from "./cardSkeleton"
+import { ErrorCard } from "./errorCard"
+
+async function fetchMaterials(): Promise<Material[]> {
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/materials`
+    )
+
+    if (!response.ok) {
+        throw new Error("Response not OK")
+    }
+
+    return response.json()
+}
 
 export default function ListMaterials() {
-    
-    const [materials, setMaterials] = useState<Material[]>([]);
 
-    useEffect(() => {
-        async function fetchMaterials() {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/materials`);
+    const {
+        data: materials,
+        isLoading,
+        isError,
+        error
+    } = useQuery<Material[]>({
+        queryKey: ["materials"],
+        queryFn: fetchMaterials
+    })
 
-                if (!response.ok) {
-                     throw new Error("Response not OK");
-                 }
+    if (isLoading) {
+        return (
+            <div className="flex flex-col gap-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+                <CardSkeleton key={index} />
+            ))}
+            </div>
+        );
+    }
 
-                const data = await response.json();
-                setMaterials(data);
-            } catch (error) {
-                console.error('Error fetching materials:', error);
-            }
-        }
+    if (isError) return <ErrorCard message={`${error.message}: error getting materials`}/>;
 
-        fetchMaterials();
-    }, []);
-    
     return (
         <div className="w-full">
-            <h1>List of materials</h1>
-            {materials.length === 0 ? (
+            {!materials || materials.length === 0 ? (
                 <p>No materials available.</p>
             ) : (
                 <ul className="flex flex-col gap-4">

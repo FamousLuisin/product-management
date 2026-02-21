@@ -1,36 +1,50 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import type Product from "../types/typeProduct"
 import ProductCard from "./productCard"
+import CardSkeleton from "./cardSkeleton"
+import { ErrorCard } from "./errorCard"
+
+async function fetchProducts(): Promise<Product[]> {
+    const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/products`
+    )
+
+    if (!response.ok) {
+        throw new Error("Response not OK")
+    }
+
+    return response.json()
+}
 
 export default function ListProduct() {
-    
-    const [products, setProducts] = useState<Product[]>([]);
 
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
+    const {
+        data: products,
+        isLoading,
+        isError,
+        error
+    } = useQuery<Product[]>({
+        queryKey: ["products"],
+        queryFn: fetchProducts
+    })
 
-                if (!response.ok) {
-                    throw new Error("Response not OK");
-                }
+    if (isLoading) {
+        return (
+            <div className="flex flex-col gap-4">
+            {Array.from({ length: 5 }).map((_, index) => (
+                <CardSkeleton key={index} />
+            ))}
+            </div>
+        );
+    }
 
-                const data = await response.json();
-                setProducts(data);
-            } catch (error) {
-                console.error('Error fetching products:', error);
-            }
-        }
+    if (isError) return <ErrorCard message={`${error.message}: error getting products`}/>;
 
-        fetchProducts();
-    }, []);
-    
     return (
         <div className="w-full">
-            <h1>List of Products</h1>
-            {products.length === 0 ? (
+            {!products || products.length === 0 ? (
                 <p>No products available.</p>
             ) : (
                 <ul className="flex flex-col gap-4">
