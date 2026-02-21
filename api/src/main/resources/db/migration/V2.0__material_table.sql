@@ -1,0 +1,6 @@
+CREATE TABLE tb_materials(
+    id UUID PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    code VARCHAR(10) UNIQUE NOT NULL,
+    quantity INTEGER NOT NULL
+);

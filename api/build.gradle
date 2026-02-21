@@ -25,6 +25,9 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok:1.18.40")
 	testCompileOnly("org.projectlombok:lombok:1.18.40")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.40")
+
+    implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("io.quarkus:quarkus-flyway")
 }
 
 group = 'com.management'

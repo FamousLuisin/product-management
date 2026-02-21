@@ -1,0 +1,6 @@
+CREATE TABLE tb_products(
+    id UUID PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    code VARCHAR(10) UNIQUE NOT NULL,
+    price NUMERIC(8, 2) NOT NULL
+);

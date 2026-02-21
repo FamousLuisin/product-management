@@ -1,5 +1,6 @@
 package com.management.entity.manufacturing.dto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class ProductProduced {
     public class ProductResponseWithQuantity extends ProductResponse {
         private Integer quantity;
 
-        public ProductResponseWithQuantity(String name, Float price, String code, Integer quantity) {
+        public ProductResponseWithQuantity(String name, BigDecimal price, String code, Integer quantity) {
             super(name, price, code);
             this.quantity = quantity;
         }
