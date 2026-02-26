@@ -53,6 +53,13 @@ public class MaterialService {
         return new MaterialResponse(entity.code, entity.name, entity.quantity);
     }
 
+    public List<MaterialResponse> getMaterialByProductCode(String productCode) {
+        List<MaterialEntity> entities = MaterialEntity.findMaterialByProductCode(productCode);
+
+        return entities.stream()
+            .map(entity -> new MaterialResponse(entity.code, entity.name, entity.quantity)).toList();
+    }
+
     public void updateMaterial(String code, MaterialRequest request) {
         MaterialEntity entity = MaterialEntity.find("code", code).firstResult();
         

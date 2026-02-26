@@ -25,22 +25,51 @@ export default function Header() {
 
             <div className="flex gap-2">
                 <button 
-                    className="bg-primary text-secondary px-2 py-1 font-semibold rounded-md flex gap-2 cursor-pointer hover:brightness-90 transition"
-                    onClick={() => setOpenModal("product")}>
-                        <CirclePlus /> Product
+                    className="
+                    bg-primary text-secondary 
+                    px-3 py-2 
+                    font-semibold 
+                    rounded-xl 
+                    flex gap-2 items-center
+                    cursor-pointer
+                    shadow-md
+                    transition-all duration-300 ease-in-out
+                    hover:-translate-y-1
+                    hover:scale-105
+                    hover:shadow-xl
+                    active:scale-95
+                    "
+                    onClick={() => setOpenModal("product")}
+                >
+                    <CirclePlus /> Product
                 </button>         
+
                 <button 
-                    className="bg-secondary text-primary px-2 py-1 font-semibold rounded-md flex gap-2 cursor-pointer hover:brightness-90 transition"
-                    onClick={() => setOpenModal("material")}>
-                        <CirclePlus /> Material
+                    className="
+                    bg-secondary text-primary 
+                    px-3 py-2 
+                    font-semibold 
+                    rounded-xl 
+                    flex gap-2 items-center
+                    cursor-pointer
+                    shadow-md
+                    transition-all duration-300 ease-in-out
+                    hover:-translate-y-1
+                    hover:scale-105
+                    hover:shadow-xl
+                    active:scale-95
+                    "
+                    onClick={() => setOpenModal("material")}
+                >
+                    <CirclePlus /> Material
                 </button>         
             </div>
 
             <Modal isOpen={openModal === "product"} onClose={() => setOpenModal(null)} modalTitle="Create Product">
-                <CreateProductForm onClose={setOpenModal}/>
+                <CreateProductForm onClose={() => setOpenModal(null)} />
             </Modal>
             <Modal isOpen={openModal === "material"} onClose={() => setOpenModal(null)} modalTitle="Create Material">
-                <CreateMaterialForm onClose={setOpenModal}/>
+                <CreateMaterialForm onClose={() => setOpenModal(null)} />
             </Modal>
         </nav>
     )

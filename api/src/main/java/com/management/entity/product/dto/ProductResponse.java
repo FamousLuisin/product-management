@@ -1,5 +1,7 @@
 package com.management.entity.product.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,7 @@ public class ProductResponse {
     
     private String name;
 
-    private Float price;
+    private BigDecimal price;
 
     private String code;
 }

@@ -1,5 +1,6 @@
 package com.management.entity.product.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.management.entity.manufacturing.dto.ProductManufacturing;
@@ -14,7 +15,7 @@ public class ProductRequest {
     
     private String name;
 
-    private Float price;
+    private BigDecimal price;
 
     private List<ProductManufacturing> manufacturing;
 }

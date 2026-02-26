@@ -24,7 +24,7 @@ public class ManufacturingEntity extends PanacheEntityBase {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "product_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "product_id")
     public ProductEntity product;
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "material_id")

@@ -1,5 +1,6 @@
 package com.management.entity.product;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@Entity @Table(name = "tb_product")
+@Entity @Table(name = "tb_products")
 @AllArgsConstructor @NoArgsConstructor
 public class ProductEntity extends PanacheEntityBase{
     
@@ -26,7 +27,7 @@ public class ProductEntity extends PanacheEntityBase{
 
     public String name;
 
-    public Float price;
+    public BigDecimal price;
 
     public String code;
 

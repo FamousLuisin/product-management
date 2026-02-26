@@ -1,5 +1,6 @@
 package com.management.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ProductService {
     public ProductResponse createProduct(ProductRequest product) {
         ProductEntity entity = new ProductEntity();
 
-        if (product.getName() == null || product.getName().trim().isEmpty() || product.getPrice() <= 0) {
+        if (product.getName() == null || product.getName().trim().isEmpty() || product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new WebApplicationException("Invalid product data", HttpResponseStatus.BAD_REQUEST.code());
         }
 
@@ -48,7 +49,6 @@ public class ProductService {
     public void updateManufacturing(String code, List<ProductManufacturing> manufacturing) {
         ProductEntity entity = ProductEntity.find("code", code).firstResult();
 
-        System.out.println("teste 1");
         
         if (entity == null) {
             throw new WebApplicationException("Product not found", HttpResponseStatus.NOT_FOUND.code());
@@ -58,7 +58,6 @@ public class ProductService {
             throw new WebApplicationException("Manufacturing data is required", HttpResponseStatus.BAD_REQUEST.code());
         }
 
-        System.out.println("teste 2");
 
         ManufacturingEntity.delete("product", entity);
         this.addManufacturing(entity, manufacturing);
@@ -107,7 +106,9 @@ public class ProductService {
             );
         }
 
-        return new QuantityProductProduced(maxToProduce * product.price, maxToProduce);
+        BigDecimal total = product.price.multiply(BigDecimal.valueOf(maxToProduce));
+
+        return new QuantityProductProduced(total.floatValue(), maxToProduce);
     }
 
     private List<ProductEntity> addManufacturingInProducts(List<ProductEntity> products, List<ManufacturingEntity> manufacturings) {
@@ -123,7 +124,6 @@ public class ProductService {
     private void addManufacturing(ProductEntity product, List<ProductManufacturing> manufacturing) {
         List<ManufacturingEntity> manufacturings = new ArrayList<>();
         
-        System.out.println("teste 3");
 
         MaterialEntity.findByCodes(
             manufacturing.stream()
@@ -142,7 +142,6 @@ public class ProductService {
         });
 
         ManufacturingEntity.persist(manufacturings);
-        System.out.println("teste 4");
     }
 
     public List<ProductResponse> getProducts(Integer page, Integer size) {
@@ -169,7 +168,7 @@ public class ProductService {
             throw new WebApplicationException("Product not found", HttpResponseStatus.NOT_FOUND.code());
         }
 
-        if (product.getName().length() < 0 || product.getPrice() <= 0) {
+        if (product.getName().length() < 0 || product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new WebApplicationException("Invalid product data", HttpResponseStatus.BAD_REQUEST.code());
         }
 
