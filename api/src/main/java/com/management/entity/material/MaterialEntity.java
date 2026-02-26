@@ -42,4 +42,8 @@ public class MaterialEntity extends PanacheEntityBase {
     public static List<MaterialEntity> findMaterialWithManufacturing() {
         return MaterialEntity.find("SELECT mt FROM MaterialEntity mt JOIN ManufacturingEntity m ON mt.id = m.material.id").list();
     }
+
+    public static List<MaterialEntity> findMaterialByProductCode(String productCode) {
+        return MaterialEntity.find("SELECT mt FROM MaterialEntity mt JOIN ManufacturingEntity m ON mt.id = m.material.id JOIN ProductEntity p ON m.product.id = p.id WHERE p.code = ?1", productCode).list();
+    }
 }

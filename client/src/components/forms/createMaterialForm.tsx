@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 
 type Props = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onClose: (value: any) => any
+  onClose: () => void
 }
 
 export default function CreateMaterialForm({onClose}: Props) {
@@ -32,7 +31,7 @@ export default function CreateMaterialForm({onClose}: Props) {
             }
 
             navigate("/")
-            onClose(null)
+            onClose()
         } catch (error) {
             console.log(error)
         }

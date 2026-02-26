@@ -73,6 +73,17 @@ public class MaterialController {
         return Response.ok(materialService.getMaterialByCode(code)).build();
     }
 
+    @GET
+    @Path("/product/{code}")
+    @Operation(summary = "Get material by product code", 
+        description = "Retrieves a material associated with a product by the product's unique code",
+        operationId = "getMaterialByProductCode"
+    )
+    @APIResponse(responseCode = "200", description = "Material retrieved successfully")
+    public Response getMaterialByProductCode(@PathParam("code") String code) {
+        return Response.ok(materialService.getMaterialByProductCode(code)).build();
+    }
+
     @PUT
     @Path("/{code}")
     @Operation(summary = "Update material", 

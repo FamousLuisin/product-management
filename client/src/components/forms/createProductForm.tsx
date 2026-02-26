@@ -1,149 +1,198 @@
 "use client"
 
-import type Manufacturing from "@/types/typeManufacturing";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 
 type Props = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onClose: (value: any) => any
-}
+  onClose: () => void;
+};
+
+type Material = {
+  code: string;
+  name: string;
+};
+
+type Manufacturing = {
+  materialCode: string;
+  materialName: string;
+  quantity: number;
+};
 
 export default function CreateProductForm({ onClose }: Props) {
-    const [name, setName] = useState("");
-    const [price, setPrice] = useState("");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [materialCode, setMaterialCode] = useState("");
-    const [quantity, setQuantity] = useState(1);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [materialCode, setMaterialCode] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [manufacturing, setManufacturing] = useState<Manufacturing[]>([]);
 
-    const [manufacturing, setManufacturing] = useState<Manufacturing[]>([]);
+  const { data: materials = [], isLoading, isError } = useQuery({
+    queryKey: ["materials"],
+    queryFn: async (): Promise<Material[]> => {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/materials/all`
+      );
 
-    function addManufacturing() {
-      if (!materialCode || quantity <= 0) return;
+      if (!response.ok) {
+        throw new Error("Error fetching materials");
+      }
 
-      const trimCode = materialCode.trim()
+      const data = await response.json();
+      console.log("MATERIALS:", data);
 
-      setManufacturing([
-        ...manufacturing,
-        { materialCode: trimCode, quantity },
-      ]);
+      return data;
+    },
+  });
 
-      setMaterialCode("");
-      setQuantity(1);
-    }
+  function addManufacturing() {
+    if (!materialCode || quantity <= 0) return;
 
-    function removeManufacturing(index: number) {
-      setManufacturing(manufacturing.filter((_, i) => i !== index));
-    }
+    const selectedMaterial = materials.find(
+      (m) => m.code === materialCode
+    );
 
-    async function handleSubmit(e: React.SubmitEvent) {
-      e.preventDefault();
+    if (!selectedMaterial) return;
 
-      const url = `${import.meta.env.VITE_API_URL}/api/products`
+    const alreadyExists = manufacturing.some(
+      (item) => item.materialCode === materialCode
+    );
 
-      const payload = {
-        name,
-        price: Number(price),
-        manufacturing: manufacturing,
-      };
+    if (alreadyExists) return;
 
-      console.log(JSON.stringify(payload))
+    setManufacturing([
+      ...manufacturing,
+      {
+        materialCode: selectedMaterial.code,
+        materialName: selectedMaterial.name,
+        quantity,
+      },
+    ]);
 
-      try {
-        const response = await fetch(url, {
+    setMaterialCode("");
+    setQuantity(1);
+  }
+
+  function removeManufacturing(index: number) {
+    setManufacturing(manufacturing.filter((_, i) => i !== index));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    const payload = {
+      name,
+      price: Number(price),
+      manufacturing,
+    };
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/products`,
+        {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
-        })
-
-        if (!response.ok) {
-          throw new Error("error creating product")
+          body: JSON.stringify(payload),
         }
+      );
 
-        navigate("/")
-        onClose(null)
-      } catch (error) {
-        console.log(error)
+      if (!response.ok) {
+        throw new Error("Error creating product");
       }
+
+      navigate("/");
+      onClose();
+    } catch (error) {
+      console.error(error);
     }
+  }
 
-    return (
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          type="text"
-          placeholder="Product Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border-2 p-2 rounded-md"
-        />
+  if (isLoading) return <p>Loading materials...</p>;
+  if (isError) return <p>Error loading materials</p>;
 
-        <input
-          type="text"
-          inputMode="numeric"
-          pattern="^[0-9]+\.?[0-9]*$"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          className="border-2 p-2 rounded-md"
-        />
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <input
+        type="text"
+        placeholder="Product Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="border-2 p-2 rounded-md"
+      />
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Material Code"
-            value={materialCode}
-            onChange={(e) => setMaterialCode(e.target.value)}
-            className="border-2 p-2 rounded-md flex-1"
-          />
+      <input
+        type="number"
+        step="0.01"
+        placeholder="Price"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+        className="border-2 p-2 rounded-md"
+      />
 
-          <input
-            type="number"
-            min={1}
-            placeholder="Qty"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="border-2 p-2 rounded-md w-24"
-          />
+      <div className="flex gap-2">
+        <select
+          value={materialCode}
+          onChange={(e) => setMaterialCode(e.target.value)}
+          className="border-2 p-2 rounded-md flex-1"
+        >
+          <option value="">Select Material</option>
 
-          <button
-            type="button"
-            onClick={addManufacturing}
-            className="bg-primary text-secondary px-3 rounded-md font-semibold cursor-pointer"
-          >
-            Add
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {manufacturing.map((item, index) => (
-            <span
-              key={index}
-              className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-full text-sm"
-            >
-              <p>
-                {item.materialCode} × {item.quantity}
-              </p>
-
-              <button
-                type="button"
-                onClick={() => removeManufacturing(index)}
-                className="text-red-500 font-bold"
-              >
-                ×
-              </button>
-            </span>
+          {materials.map((material) => (
+            <option key={material.code} value={material.code}>
+              {material.name} ({material.code})
+            </option>
           ))}
-        </div>
+        </select>
+
+        <input
+          type="number"
+          min={1}
+          placeholder="Qty"
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+          className="border-2 p-2 rounded-md w-24"
+        />
 
         <button
-          type="submit"
-          className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition cursor-pointer"
+          type="button"
+          onClick={addManufacturing}
+          disabled={!materialCode}
+          className="cursor-pointer bg-primary text-secondary px-3 rounded-md font-semibold disabled:opacity-50"
         >
-          Create
+          Add
         </button>
-      </form>
-    );
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {manufacturing.map((item, index) => (
+          <span
+            key={index}
+            className="flex items-center gap-2 bg-secondary px-3 py-1 rounded-full text-sm"
+          >
+            <p>
+              {item.materialName} × {item.quantity}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => removeManufacturing(index)}
+              className="text-red-500 font-bold"
+            >
+              ×
+            </button>
+          </span>
+        ))}
+      </div>
+
+      <button
+        type="submit"
+        className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition"
+      >
+        Create
+      </button>
+    </form>
+  );
 }
