@@ -11,6 +11,7 @@ export default function CreateMaterialForm({onClose}: Props) {
     const [name, setName] = useState("")
     const [quantity, setQuantity] = useState(0)
     const navigate = useNavigate();
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
     async function handleSubmit(e: React.SubmitEvent) {
         e.preventDefault();
@@ -33,12 +34,28 @@ export default function CreateMaterialForm({onClose}: Props) {
             navigate("/")
             onClose()
         } catch (error) {
-            console.log(error)
+            setSubmitError((error as Error).message);
         }
     }
 
     return (
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {submitError && (
+            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-md flex items-start gap-3 cursor-pointer">
+                <div className="flex-1">
+                <p className="font-semibold">Erro</p>
+                <p className="text-sm">{submitError}</p>
+                </div>
+                <button
+                type="button"
+                onClick={() => setSubmitError(null)}
+                className="text-red-500 hover:text-red-700 font-bold"
+                >
+                ×
+                </button>
+            </div>
+        )}
+
         <input
             type="text"
             name="name"

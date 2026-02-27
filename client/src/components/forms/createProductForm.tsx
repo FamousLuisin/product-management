@@ -27,6 +27,7 @@ export default function CreateProductForm({ onClose }: Props) {
   const [materialCode, setMaterialCode] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [manufacturing, setManufacturing] = useState<Manufacturing[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { data: materials = [], isLoading, isError } = useQuery({
     queryKey: ["materials"],
@@ -106,15 +107,30 @@ export default function CreateProductForm({ onClose }: Props) {
       navigate("/");
       onClose();
     } catch (error) {
-      console.error(error);
+      setSubmitError((error as Error).message);
     }
   }
 
   if (isLoading) return <p>Loading materials...</p>;
-  if (isError) return <p>Error loading materials</p>;
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {submitError && (
+        <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-md flex items-start gap-3">
+          <div className="flex-1">
+            <p className="font-semibold">Erro</p>
+            <p className="text-sm">{submitError}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSubmitError(null)}
+            className="text-red-500 hover:text-red-700 font-bold cursor-pointer"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       <input
         type="text"
         placeholder="Product Name"
@@ -165,6 +181,9 @@ export default function CreateProductForm({ onClose }: Props) {
           Add
         </button>
       </div>
+      {isError && (
+        <p className="text-red-500 text-sm">Error loading materials</p>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {manufacturing.map((item, index) => (
@@ -189,7 +208,7 @@ export default function CreateProductForm({ onClose }: Props) {
 
       <button
         type="submit"
-        className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition"
+        className="bg-primary text-secondary px-4 py-2 rounded-md font-semibold hover:brightness-90 transition cursor-pointer"
       >
         Create
       </button>
