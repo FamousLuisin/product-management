@@ -117,6 +117,7 @@ export default function CreateProductForm({ onClose }: Props) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {submitError && (
         <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-md flex items-start gap-3">
+          <span className="text-red-600 font-bold">⚠</span>
           <div className="flex-1">
             <p className="font-semibold">Erro</p>
             <p className="text-sm">{submitError}</p>
